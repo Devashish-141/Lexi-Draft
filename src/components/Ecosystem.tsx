@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 import {
   Fingerprint,
   Stamp,
-  FolderCloud,
+  Cloud,
   Mic,
   Hand,
   MapPin,
@@ -31,7 +31,6 @@ import {
   CheckCircle2,
   Loader2,
   AlertTriangle,
-  ExternalLink,
   Radio,
 } from "lucide-react";
 
@@ -274,7 +273,7 @@ export function Ecosystem({
           <div className="flex flex-wrap gap-2">
             <StatusChip label="Aadhaar eSign" active={isSigned} icon={Fingerprint} />
             <StatusChip label="e-Stamp" active={!!eStamp} icon={Stamp} />
-            <StatusChip label="DigiLocker" active={digiLockerPushed} icon={FolderCloud} />
+            <StatusChip label="DigiLocker" active={digiLockerPushed} icon={Cloud} />
           </div>
 
           {/* e-Stamp GRN display */}
@@ -333,7 +332,7 @@ export function Ecosystem({
                   : "bg-[#2563EB] hover:bg-[#1d4ed8] text-white"
               )}
             >
-              <FolderCloud className="w-3.5 h-3.5 mr-1.5" />
+              <Cloud className="w-3.5 h-3.5 mr-1.5" />
               {digiLockerPushed ? "Pushed ✓" : !hasPrinted ? "Print First" : "Push to DigiLocker"}
             </Button>
           </div>

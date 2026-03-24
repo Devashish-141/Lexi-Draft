@@ -22,10 +22,14 @@ create table if not exists public.bonds (
   legal_address text,       -- Extracted Address only (no image)
   content text,             -- The Legalese
   xai_summary text,         -- Marathi/Hindi summary
-  status text default 'draft' check (status in ('draft', 'verified', 'printed')),
+  status text default 'draft' check (status in ('draft', 'verified', 'printed', 'esigned', 'digilocker')),
   health_score int default 0,
   created_at timestamp with time zone default now()
 );
+
+-- Index for high-performance dashboard filtering
+create index if not exists bonds_user_id_idx on public.bonds (user_id);
+create index if not exists bonds_status_idx on public.bonds (status);
 
 -- 3. Transient Session Data (30-minute TTL for demo / multi-page flows)
 -- Records are purged by pg_cron hourly. Do NOT store raw ID numbers here.
@@ -37,6 +41,8 @@ create table if not exists public.temp_session_data (
   expires_at timestamp with time zone not null default (now() + interval '30 minutes')
 );
 
+create index if not exists temp_session_expires_idx on public.temp_session_data (expires_at);
+
 -- 4. Secure Notary View
 create or replace view public.notary_queue as
   select
@@ -47,7 +53,7 @@ create or replace view public.notary_queue as
     p.full_name as citizen_name
   from public.bonds b
   join public.profiles p on b.user_id = p.id
-  where b.status = 'verified';
+  where b.status in ('verified', 'esigned', 'digilocker', 'printed');
 
 -- 5. Row Level Security
 alter table public.profiles enable row level security;
@@ -61,10 +67,13 @@ create policy "Users can view own bonds"
 create policy "Users can insert own bonds"
   on public.bonds for insert with check (auth.uid() = user_id);
 
+create policy "Users can update own bonds"
+  on public.bonds for update using (auth.uid() = user_id);
+
 create policy "Notaries view verified"
   on public.bonds for select using (
     exists (select 1 from public.profiles where id = auth.uid() and role = 'notary')
-    and status = 'verified'
+    and status in ('verified', 'esigned', 'digilocker', 'printed')
   );
 
 -- temp_session_data policies (session-scoped, no user_id needed)
@@ -79,6 +88,7 @@ create policy "Allow delete own session"
 
 -- 6. pg_cron Cleanup Job (requires pg_cron extension enabled in Supabase)
 -- Enable via: Supabase Dashboard → Database → Extensions → pg_cron
+-- This ensures that transient sessions (the closest thing to state) are entirely ephemeral.
 select cron.schedule(
   'purge-expired-sessions',         -- job name
   '0 * * * *',                      -- every hour
