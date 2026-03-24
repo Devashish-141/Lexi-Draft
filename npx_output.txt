@@ -1,0 +1,2 @@
+Could not create a project called "lexi draft" because of npm naming restrictions:
+    * name can only contain URL-friendly characters

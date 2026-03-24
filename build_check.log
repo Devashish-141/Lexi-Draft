@@ -1,0 +1,20 @@
+
+> tmpapp@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.15
+
+   Creating an optimized production build ...
+Failed to compile.
+
+src/app/layout.tsx
+`next/font` error:
+Unknown font `Geist`
+
+./src/app/page.tsx
+Module not found: Can't resolve '@/components/ui/label'
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+> Build failed because of webpack errors

@@ -1,0 +1,52 @@
+
+> tmpapp@0.1.0 dev
+> next dev -H 0.0.0.0
+
+  ▲ Next.js 14.2.15
+  - Local:        http://localhost:3000
+  - Network:      http://0.0.0.0:3000
+
+ ✓ Starting...
+ ✓ Ready in 1134ms
+ ○ Compiling / ...
+ ⨯ ./src/app/globals.css:3:1
+Syntax error: /home/nickson/Documents/lexi draft/src/app/globals.css The `border-border` class does not exist. If `border-border` is a custom class, make sure it is defined within a `@layer` directive.
+
+  1 | @import "tw-animate-css";
+  2 | @import "shadcn/tailwind.css";
+> 3 | @tailwind base;
+    | ^
+  4 | @tailwind components;
+  5 | @tailwind utilities;
+ ⨯ ./src/app/globals.css:3:1
+Syntax error: /home/nickson/Documents/lexi draft/src/app/globals.css The `border-border` class does not exist. If `border-border` is a custom class, make sure it is defined within a `@layer` directive.
+
+  1 | @import "tw-animate-css";
+  2 | @import "shadcn/tailwind.css";
+> 3 | @tailwind base;
+    | ^
+  4 | @tailwind components;
+  5 | @tailwind utilities;
+ GET / 500 in 4054ms
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|/home/nickson/Documents/lexi draft/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[2]!/home/nickson/Documents/lexi draft/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[3]!/home/nickson/Documents/lexi draft/src/app/globals.css': No serializer registered for PostCSSSyntaxError
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> webpack/lib/ModuleBuildError -> PostCSSSyntaxError
+ ⨯ ./src/app/globals.css:3:1
+Syntax error: /home/nickson/Documents/lexi draft/src/app/globals.css The `border-border` class does not exist. If `border-border` is a custom class, make sure it is defined within a `@layer` directive.
+
+  1 | @import "tw-animate-css";
+  2 | @import "shadcn/tailwind.css";
+> 3 | @tailwind base;
+    | ^
+  4 | @tailwind components;
+  5 | @tailwind utilities;
+ GET / 500 in 203ms
+ ⨯ ./src/app/globals.css:3:1
+Syntax error: /home/nickson/Documents/lexi draft/src/app/globals.css The `border-border` class does not exist. If `border-border` is a custom class, make sure it is defined within a `@layer` directive.
+
+  1 | @import "tw-animate-css";
+  2 | @import "shadcn/tailwind.css";
+> 3 | @tailwind base;
+    | ^
+  4 | @tailwind components;
+  5 | @tailwind utilities;
+ GET /notary 500 in 648ms
