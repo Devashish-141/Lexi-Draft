@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { IdentityExtraction } from "@/lib/gemini-handler";
+import { ISLPlayer } from "./ISLPlayer";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -645,17 +646,9 @@ export function AgentWorkspace({
                 />
               </div>
 
-              {/* ISL mock player */}
+              {/* ISL functional player */}
               {islActive && isComplete && (
-                <div className="rounded-xl overflow-hidden border-2 border-purple-300 dark:border-purple-700 bg-purple-900 relative h-20 flex items-center justify-center animate-in fade-in duration-300">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-900 to-indigo-900" />
-                  <div className="relative z-10 text-center">
-                    <Hand className="w-6 h-6 text-purple-300 mx-auto mb-1 animate-bounce" />
-                    <p className="text-[9px] font-black text-purple-200 uppercase tracking-wider">AI-ISL Avatar Translating…</p>
-                    <p className="text-[8px] text-purple-400">2026 Beta · MeitY Approved</p>
-                  </div>
-                  <div className="absolute inset-0 rounded-xl border-2 border-purple-400 animate-ping opacity-20" />
-                </div>
+                <ISLPlayer text={draftText} />
               )}
 
               {showXAI ? (

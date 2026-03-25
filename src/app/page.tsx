@@ -483,6 +483,7 @@ export default function CitizenDashboard() {
           <Ecosystem
             generationStep={generationStep}
             activeBondType={activeBondType}
+            draftText={draftText}
             hasPrinted={hasPrinted}
             onNMCSync={(propertyData) => {
               // Inject NMC data as additional context into pending draft

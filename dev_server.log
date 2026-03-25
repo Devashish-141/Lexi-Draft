@@ -1,81 +1,38 @@
 
 > tmpapp@0.1.0 dev
-> next dev -p 3000
+> next dev
 
   ▲ Next.js 14.2.15
   - Local:        http://localhost:3000
+  - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 1383ms
+ ✓ Ready in 1814ms
  ○ Compiling / ...
- ✓ Compiled / in 1211ms (592 modules)
- GET / 200 in 1615ms
- ✓ Compiled in 465ms (292 modules)
- ○ Compiling /dashboard ...
- ✓ Compiled /dashboard in 525ms (710 modules)
- ✓ Compiled /generate in 261ms (754 modules)
- ○ Compiling /notary ...
- ✓ Compiled /notary in 577ms (934 modules)
- GET /notary 200 in 728ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- ✓ Compiled in 447ms (950 modules)
- GET /notary 200 in 339ms
- ✓ Compiled /favicon.ico in 223ms (513 modules)
- GET /favicon.ico 200 in 290ms
- ✓ Compiled in 345ms (981 modules)
- GET / 200 in 68ms
- GET / 200 in 16ms
- GET /notary 200 in 34ms
- ✓ Compiled in 440ms (950 modules)
- ✓ Compiled in 616ms (952 modules)
- ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- GET /dashboard 200 in 70ms
- ✓ Compiled /favicon.ico in 72ms (514 modules)
- GET /favicon.ico 200 in 131ms
- ✓ Compiled in 349ms (985 modules)
- GET / 200 in 71ms
- GET /notary 200 in 33ms
- GET / 200 in 24ms
- GET /favicon.ico 200 in 15ms
- GET / 200 in 19ms
- GET /dashboard 200 in 17ms
- GET /favicon.ico 200 in 6ms
- GET /generate 200 in 26ms
- GET /favicon.ico 200 in 3ms
- GET / 200 in 17ms
- ✓ Compiled in 439ms (958 modules)
- ✓ Compiled in 335ms (960 modules)
- GET / 200 in 103ms
- GET /notary 200 in 42ms
- ✓ Compiled in 441ms (960 modules)
- ✓ Compiled in 637ms (968 modules)
- ✓ Compiled in 367ms (968 modules)
- GET / 200 in 102ms
- GET / 200 in 39ms
- ✓ Compiled /favicon.ico in 405ms (521 modules)
- GET /favicon.ico 200 in 488ms
- GET /notary 200 in 90ms
- GET / 200 in 44ms
- GET /favicon.ico 200 in 9ms
- GET / 200 in 26ms
- GET /favicon.ico 200 in 9ms
- ✓ Compiled in 317ms (478 modules)
- ✓ Compiled in 584ms (978 modules)
- GET / 200 in 100ms
- GET / 200 in 53ms
- ✓ Compiled /favicon.ico in 166ms (526 modules)
- GET /favicon.ico 200 in 243ms
- ✓ Compiled in 514ms (978 modules)
- GET / 200 in 109ms
- ✓ Compiled /favicon.ico in 162ms (526 modules)
- GET /favicon.ico 200 in 223ms
- ✓ Compiled in 592ms (978 modules)
- GET / 200 in 103ms
- ✓ Compiled /favicon.ico in 86ms (526 modules)
- GET /favicon.ico 200 in 155ms
- ✓ Compiled in 252ms (483 modules)
- ✓ Compiled in 679ms (988 modules)
- GET / 200 in 97ms
- GET / 200 in 80ms
- ✓ Compiled /favicon.ico in 234ms (531 modules)
- GET /favicon.ico 200 in 318ms
+ ✓ Compiled / in 4s (1065 modules)
+ GET / 200 in 4352ms
+ ✓ Compiled in 362ms (525 modules)
+ ✓ Compiled /notary in 385ms (1062 modules)
+ ✓ Compiled in 459ms (1078 modules)
+ ✓ Compiled in 361ms (1078 modules)
+ ✓ Compiled in 475ms (1078 modules)
+ GET /notary 200 in 86ms
+ ✓ Compiled in 471ms (1078 modules)
+ ✓ Compiled in 890ms (1086 modules)
+ ✓ Compiled in 266ms (539 modules)
+ ✓ Compiled in 825ms (1086 modules)
+ ✓ Compiled in 180ms (539 modules)
+ ✓ Compiled in 316ms (1090 modules)
+ ✓ Compiled in 381ms (1090 modules)
+ ✓ Compiled in 267ms (1090 modules)
+ GET /notary 200 in 98ms
+ ✓ Compiled in 1055ms (1092 modules)
+ GET / 200 in 136ms
+ GET / 200 in 76ms
+ ✓ Compiled /favicon.ico in 430ms (581 modules)
+ GET /favicon.ico 200 in 504ms
+ ✓ Compiled in 493ms (1092 modules)
+ ✓ Compiled in 330ms (1092 modules)
+ GET / 200 in 126ms
+ ✓ Compiled /favicon.ico in 126ms (581 modules)
+ GET /favicon.ico 200 in 188ms

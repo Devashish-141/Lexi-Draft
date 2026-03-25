@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { 
   CheckCircle2, Printer, ShieldCheck, FileBadge, 
   Check, ScrollText, ChevronDown, ShieldAlert,
   Search, Clock, Filter, ArrowLeftRight, QrCode,
-  Fingerprint, Stamp, FolderOpen, KeyRound, Loader2
+  Fingerprint, Stamp, FolderOpen, KeyRound, Loader2, Hand,
+  Play, Pause, Square, Volume2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getNotaryDrafts, NotaryDraft } from "@/lib/store";
@@ -49,6 +50,12 @@ export default function NotaryDashboard() {
   const [showOtpSheet, setShowOtpSheet]   = useState(false);
   const [otp, setOtp]                     = useState("");
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [islActive, setIslActive]         = useState(false);
+  const [islSpeaking, setIslSpeaking]     = useState(false);
+  const [islPaused, setIslPaused]         = useState(false);
+  const [islProgress, setIslProgress]     = useState(0);
+  const speechRef                         = useRef<SpeechSynthesisUtterance | null>(null);
+  const progressIntervalRef               = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const resetDigitalHandshake = useCallback(() => {
     setIsSigned(false);
@@ -58,6 +65,12 @@ export default function NotaryDashboard() {
     setShowOtpSheet(false);
     setOtp("");
     setIsVerifyingOtp(false);
+    setIslActive(false);
+    setIslSpeaking(false);
+    setIslPaused(false);
+    setIslProgress(0);
+    if (typeof window !== 'undefined') window.speechSynthesis?.cancel();
+    if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
   }, []);
 
   const handleOtpVerify = async () => {
@@ -86,6 +99,96 @@ export default function NotaryDashboard() {
     setHasPrinted(true);
   };
 
+  // ─── ISL Avatar Functions ────────────────────────────────────────────────────
+
+  const handleIslPlay = useCallback(() => {
+    if (!selected?.content || typeof window === 'undefined') return;
+    const synth = window.speechSynthesis;
+
+    if (islPaused && speechRef.current) {
+      synth.resume();
+      setIslPaused(false);
+      setIslSpeaking(true);
+      return;
+    }
+
+    synth.cancel();
+    const utterance = new SpeechSynthesisUtterance(selected.content);
+    utterance.lang = 'en-IN';
+    utterance.rate = 0.82;
+    utterance.pitch = 1.0;
+
+    const voices = synth.getVoices();
+    const preferred = voices.find(v => v.lang.startsWith('en-IN') || v.name.includes('India')) || voices.find(v => v.lang.startsWith('en'));
+    if (preferred) utterance.voice = preferred;
+
+    utterance.onstart = () => {
+      setIslSpeaking(true);
+      setIslPaused(false);
+      setIslProgress(0);
+      // Simulate progress reporting
+      let start = Date.now();
+      const estDuration = (selected.content?.split(' ').length ?? 200) * 380; // ~380ms per word at slow rate
+      progressIntervalRef.current = setInterval(() => {
+        const elapsed = Date.now() - start;
+        const pct = Math.min(99, Math.round((elapsed / estDuration) * 100));
+        setIslProgress(pct);
+      }, 500);
+    };
+
+    utterance.onend = () => {
+      setIslSpeaking(false);
+      setIslPaused(false);
+      setIslProgress(100);
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    };
+
+    utterance.onerror = () => {
+      setIslSpeaking(false);
+      setIslPaused(false);
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    };
+
+    speechRef.current = utterance;
+    synth.speak(utterance);
+  }, [selected, islPaused]);
+
+  const handleIslPause = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    window.speechSynthesis.pause();
+    setIslPaused(true);
+    setIslSpeaking(false);
+    if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+  }, []);
+
+  const handleIslStop = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    window.speechSynthesis.cancel();
+    setIslSpeaking(false);
+    setIslPaused(false);
+    setIslProgress(0);
+    if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+  }, []);
+
+  const handleIslToggle = useCallback((active: boolean) => {
+    if (!active) {
+      window.speechSynthesis?.cancel();
+      setIslSpeaking(false);
+      setIslPaused(false);
+      setIslProgress(0);
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    }
+    setIslActive(active);
+  }, []);
+
+  // Clean up speech on unmount
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis?.cancel();
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    };
+  }, []);
+
   const filtered = useMemo(
     () => (filter === "all" ? draftsList : draftsList.filter((d) => d.type.toLowerCase() === filter.toLowerCase())),
     [filter, draftsList]
@@ -112,10 +215,9 @@ export default function NotaryDashboard() {
     <div className="min-h-screen bg-slate-50 dark:bg-[#1A202C] text-slate-900 dark:text-slate-100 font-sans">
       <style>{`
         @media print {
-          body > *:not(#print-target) { display: none !important; }
-          #print-target { display: block !important; }
+          body > *:not(.dialog-content-wrapper) { display: none !important; }
+          .dialog-content-wrapper { display: block !important; position: absolute; left: 0; top: 0; }
         }
-        #print-target { display: none; }
       `}</style>
 
       {/* Header */}
@@ -226,23 +328,157 @@ export default function NotaryDashboard() {
                       </Button>
                     }
                    />
-                   <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-50 dark:bg-slate-950 p-0 border-none shadow-2xl overflow-hidden glass rounded-3xl">
-                     <DialogHeader className="p-6 bg-white dark:bg-slate-900 border-b flex flex-row items-start justify-between">
+                   <DialogContent className="sm:max-w-4xl md:max-w-5xl lg:max-w-6xl max-h-[90vh] flex flex-col bg-slate-50 dark:bg-slate-950 p-0 border-none shadow-2xl overflow-hidden glass rounded-3xl dialog-content-wrapper">
+                     <DialogHeader className="p-6 pr-14 bg-white dark:bg-slate-900 border-b flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0">
                        <div>
                          <DialogTitle className="text-xl font-black">Phygital Print View</DialogTitle>
                          <p className="text-xs text-slate-500 dark:text-slate-400 font-bold tracking-widest uppercase mt-1">Audit Trace: {selected?.id}</p>
                        </div>
-                       <Button 
-                        size="lg"
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white touch-target rounded-xl px-6 font-bold"
-                        onClick={() => window.print()}
-                       >
-                         <Printer className="w-5 h-5 mr-3" />
-                         1-Click Print
-                       </Button>
+                       
+                       <div className="flex items-center gap-4 sm:gap-6 self-end sm:self-auto">
+                         <div className="flex items-center gap-2 shrink-0">
+                           <Hand className="w-4 h-4 text-purple-600" />
+                           <span className="text-xs font-bold text-slate-600 dark:text-slate-300">ISL Avatar</span>
+                           <Switch
+                             id="isl-toggle-notary"
+                             checked={islActive}
+                             onCheckedChange={handleIslToggle}
+                             className="data-[state=checked]:bg-purple-600"
+                           />
+                         </div>
+                         <Button 
+                          size="lg"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white touch-target rounded-xl px-4 sm:px-6 font-bold shrink-0"
+                          onClick={() => window.print()}
+                         >
+                           <Printer className="w-5 h-5 sm:mr-3" />
+                           <span className="hidden sm:inline">1-Click Print</span>
+                         </Button>
+                       </div>
                      </DialogHeader>
 
-                     <div className="p-4 sm:p-12 bg-[#f0f0f5] dark:bg-slate-900 overflow-y-auto">
+                     <div className="p-4 sm:p-12 bg-[#f0f0f5] dark:bg-slate-900 overflow-y-auto flex-1">
+                        
+                        {islActive && (
+                          <div className="mb-6 rounded-2xl overflow-hidden border-2 border-purple-300 dark:border-purple-700 bg-gradient-to-br from-purple-950 to-indigo-950 relative shadow-xl max-w-2xl mx-auto animate-in fade-in duration-300">
+                            {/* Avatar display area */}
+                            <div className="flex items-center gap-5 px-6 pt-5 pb-4">
+                              {/* Animated avatar circle */}
+                              <div className="relative shrink-0">
+                                <div className={cn(
+                                  "w-16 h-16 rounded-full border-2 flex items-center justify-center transition-all duration-300",
+                                  islSpeaking
+                                    ? "border-purple-400 bg-purple-800 shadow-lg shadow-purple-500/40"
+                                    : islPaused
+                                    ? "border-amber-400 bg-amber-900/60"
+                                    : "border-purple-700 bg-purple-900"
+                                )}>
+                                  <Hand className={cn(
+                                    "w-7 h-7 transition-all",
+                                    islSpeaking ? "text-purple-200 animate-bounce" : "text-purple-400"
+                                  )} />
+                                </div>
+                                {islSpeaking && (
+                                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-green-400 border-2 border-purple-950 animate-pulse" />
+                                )}
+                                {islPaused && (
+                                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-400 border-2 border-purple-950" />
+                                )}
+                              </div>
+
+                              {/* Info and waveform */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between mb-1">
+                                  <p className="text-[10px] font-black text-purple-200 uppercase tracking-wider">
+                                    {islSpeaking ? "Narrating Legal Document…" : islPaused ? "Paused" : islProgress === 100 ? "Narration Complete" : "AI-ISL Narrator"}
+                                  </p>
+                                  <span className="text-[9px] font-bold text-purple-400">2026 Beta · MeitY</span>
+                                </div>
+
+                                {/* Live waveform bars */}
+                                {islSpeaking && (
+                                  <div className="flex items-end gap-[3px] h-6 mb-2">
+                                    {[0.4, 0.7, 1.0, 0.6, 0.9, 0.5, 0.8, 1.0, 0.3, 0.7, 0.9, 0.4].map((h, i) => (
+                                      <div
+                                        key={i}
+                                        className="w-1 rounded-full bg-purple-400"
+                                        style={{
+                                          height: `${h * 100}%`,
+                                          animation: `pulse ${0.4 + i * 0.07}s ease-in-out infinite alternate`,
+                                          animationDelay: `${i * 60}ms`,
+                                        }}
+                                      />
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Progress bar */}
+                                {(islSpeaking || islPaused || islProgress > 0) && (
+                                  <div className="h-1.5 bg-purple-800 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full rounded-full bg-gradient-to-r from-purple-400 to-indigo-400 transition-all duration-500"
+                                      style={{ width: `${islProgress}%` }}
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Controls */}
+                            <div className="flex items-center gap-3 px-6 pb-5">
+                              <Button
+                                size="sm"
+                                onClick={handleIslPlay}
+                                disabled={islSpeaking}
+                                className={cn(
+                                  "h-9 px-4 rounded-xl font-bold text-xs gap-2",
+                                  islSpeaking
+                                    ? "bg-purple-700/50 text-purple-300 cursor-not-allowed"
+                                    : "bg-purple-600 hover:bg-purple-500 text-white"
+                                )}
+                              >
+                                <Play className="w-3.5 h-3.5" />
+                                {islPaused ? "Resume" : "Play"}
+                              </Button>
+
+                              <Button
+                                size="sm"
+                                onClick={handleIslPause}
+                                disabled={!islSpeaking}
+                                className={cn(
+                                  "h-9 px-4 rounded-xl font-bold text-xs gap-2",
+                                  !islSpeaking
+                                    ? "bg-purple-900/50 text-purple-500 cursor-not-allowed"
+                                    : "bg-amber-500 hover:bg-amber-400 text-white"
+                                )}
+                              >
+                                <Pause className="w-3.5 h-3.5" />
+                                Pause
+                              </Button>
+
+                              <Button
+                                size="sm"
+                                onClick={handleIslStop}
+                                disabled={!islSpeaking && !islPaused}
+                                className={cn(
+                                  "h-9 px-4 rounded-xl font-bold text-xs gap-2",
+                                  !islSpeaking && !islPaused
+                                    ? "bg-purple-900/50 text-purple-500 cursor-not-allowed"
+                                    : "bg-red-500 hover:bg-red-400 text-white"
+                                )}
+                              >
+                                <Square className="w-3.5 h-3.5" />
+                                Stop
+                              </Button>
+
+                              <div className="ml-auto flex items-center gap-1.5 text-[10px] text-purple-400 font-medium">
+                                <Volume2 className="w-3.5 h-3.5" />
+                                <span>en-IN · 0.82×</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
                         <div 
                           id="print-target"
                           className="w-full max-w-[210mm] mx-auto bg-[#fffff8] shadow-2xl border border-slate-200 dark:border-slate-800 relative min-h-[800px] flex flex-col p-px selection:bg-yellow-200 selection:text-black"
