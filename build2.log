@@ -1,0 +1,38 @@
+
+> tmpapp@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.15
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/9) ...
+   Generating static pages (2/9) 
+   Generating static pages (4/9) 
+   Generating static pages (6/9) 
+ ✓ Generating static pages (9/9)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    7.49 kB        94.7 kB
+├ ○ /_not-found                          873 B          88.1 kB
+├ ƒ /api/cron/cleanup                    0 B                0 B
+├ ○ /dashboard                           5.57 kB        92.8 kB
+├ ○ /dashboard-legacy                    32.6 kB         214 kB
+├ ƒ /document/[id]                       3.94 kB        91.1 kB
+├ ○ /generate                            11.7 kB         116 kB
+└ ○ /notary                              8.54 kB         190 kB
++ First Load JS shared by all            87.2 kB
+  ├ chunks/117-3b6c1e9b117bc17b.js       31.6 kB
+  ├ chunks/fd9d1056-8ceb8e37c432326f.js  53.6 kB
+  └ other shared chunks (total)          1.96 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -1,0 +1,30 @@
+
+> tmpapp@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.15
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+Error: supabaseKey is required.
+    at new rq (/home/nickson/Documents/lexi draft/.next/server/app/api/cron/cleanup/route.js:37:48397)
+    at 7212 (/home/nickson/Documents/lexi draft/.next/server/app/api/cron/cleanup/route.js:37:52556)
+    at t (/home/nickson/Documents/lexi draft/.next/server/webpack-runtime.js:1:127)
+    at r (/home/nickson/Documents/lexi draft/.next/server/app/api/cron/cleanup/route.js:48:15853)
+    at /home/nickson/Documents/lexi draft/.next/server/app/api/cron/cleanup/route.js:48:15880
+    at t.X (/home/nickson/Documents/lexi draft/.next/server/webpack-runtime.js:1:1191)
+    at /home/nickson/Documents/lexi draft/.next/server/app/api/cron/cleanup/route.js:48:15866
+    at Object.<anonymous> (/home/nickson/Documents/lexi draft/.next/server/app/api/cron/cleanup/route.js:48:15907)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+
+> Build error occurred
+Error: Failed to collect page data for /api/cron/cleanup
+    at /home/nickson/Documents/lexi draft/node_modules/next/dist/build/utils.js:1268:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+  type: 'Error'
+}
